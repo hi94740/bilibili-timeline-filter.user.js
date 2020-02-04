@@ -10,6 +10,12 @@
 // @noframes
 // ==/UserScript==
 
+function loadMoreDynamics() {
+  let currentY = $(document).scrollTop()
+  $(document).scrollTop($(document).height())
+  $(document).scrollTop(currentY)
+}
+
 unsafeWindow.filterDynamicWithTag = function() {
   let selectedTag = tagged.find(t => t.tagid == $("#selectUpTag").val())
   console.log(selectedTag)
@@ -24,6 +30,7 @@ unsafeWindow.filterDynamicWithTag = function() {
         if (href.startsWith("https://bangumi.bilibili.com/")) $(c).remove()
       }
     })
+    loadMoreDynamics()
   },100)
 }
 
