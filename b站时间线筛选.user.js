@@ -16,6 +16,8 @@ function loadMoreDynamics() {
   $(document).scrollTop(currentY)
 }
 
+//function refreshDynamics() {}
+
 unsafeWindow.filterDynamicWithTag = function() {
   let selectedTag = tagged.find(t => t.tagid == $("#selectUpTag").val())
   console.log(selectedTag)
@@ -54,8 +56,7 @@ function ajaxWithCredential(url) {
 }
 
 function fetchTags() {
-  return new Promise(resolve => {
-    ajaxWithCredential("https://api.live.bilibili.com/User/getUserInfo").then(data => {
+  return ajaxWithCredential("https://api.live.bilibili.com/User/getUserInfo").then(data => {
       let uid = data.data.uid
       console.log(uid)
       return Promise.all([ajaxWithCredential("https://api.bilibili.com/x/relation/followings?vmid=" + uid + "&pn=1&ps=50").then(data => {
@@ -82,9 +83,7 @@ function fetchTags() {
         return tag
       })
       console.log(tagged)
-      resolve()
     })
-  })
 }
 
 Promise.all([new Promise(res => {
