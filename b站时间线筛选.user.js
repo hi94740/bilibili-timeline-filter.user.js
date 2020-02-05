@@ -56,6 +56,12 @@ function clearFilters() {
   Array.from($(".card")).forEach(c => c.hidden = false)
 }
 
+function UIPadding() {
+  $("#filterUI").css("padding",$(".card")[0] ? ($(".card")[0].hidden ? "0px 0px 0px 0px" : "0px 0px 8px 0px") : "0px 0px 8px 0px")
+}
+
+
+
 const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step))
 
 function ajaxWithCredentials(url) {
@@ -101,6 +107,8 @@ function fetchTags(requestWithCredentials) {
     })
 }
 
+
+
 Promise.all([new Promise(res => {
   setInterval(function () {
     if ($(".tab-bar").length == 1) res()
@@ -113,7 +121,3 @@ Promise.all([new Promise(res => {
   tagOptions.unshift({tagid:"shamiko",name:"无筛选"})
   $("#selectUpTag").append(tagOptions.map(t => '<option value="' + t.tagid + '">' + t.name + '</option>').join()).val("shamiko").change(filterDynamicWithTag)
 })
-
-function UIPadding() {
-  $("#filterUI").css("padding",$(".card")[0] ? ($(".card")[0].hidden ? "0px 0px 0px 0px" : "0px 0px 8px 0px") : "0px 0px 8px 0px")
-}
