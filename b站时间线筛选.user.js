@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 0.1.0
+// @version 0.1.1
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -14,20 +14,25 @@ var $ = unsafeWindow.jQuery
 
 var tagged
 var selectedTag
-var observer = new MutationObserver(filterWorker)
+var cardObserver = new MutationObserver(filterWorker)
+var tabObserver = new MutationObserver(isBangumiTimeline)
 
 const filterDynamicWithTag = function() {
-  observer.disconnect()
+  cardObserver.disconnect()
   let selection = $("#selectUpTag").val()
   if (selection == "shamiko"){
     clearFilters()
-    UIPadding()
+    autoPadding()
   } else {
     selectedTag = tagged.find(t => t.tagid == selection)
     console.log(selectedTag)
-    observer.observe($("#app > div > div.home-page.f-clear > div.home-container > div > div.center-panel.f-left > div.card-list > div > div.content")[0],{childList:true,subtree:true})
-    clearFilters()
-    filterWorker()
+    new Promise(res => {setInterval(function() {
+      if ($(".card").length > 0) res()
+    })}).then(function() {
+      cardObserver.observe($(".card").parent()[0],{childList:true,subtree:true})
+      clearFilters()
+      filterWorker()
+    })
   }
 }
 
@@ -43,7 +48,7 @@ function filterWorker() {
   })
   setTimeout(loadMoreDynamics,10)
   setTimeout(loadMoreDynamics,100)
-  UIPadding()
+  autoPadding()
 }
 
 function loadMoreDynamics() {
@@ -56,10 +61,20 @@ function clearFilters() {
   Array.from($(".card")).forEach(c => c.hidden = false)
 }
 
-function UIPadding() {
+function autoPadding() {
   $("#filterUI").css("padding",$(".card")[0] ? ($(".card")[0].hidden ? "0px 0px 0px 0px" : "0px 0px 8px 0px") : "0px 0px 8px 0px")
 }
 
+function isBangumiTimeline() {
+  if ($(".selected").text() == "追番") {
+    $("#filterUI")[0].hidden = true
+    cardObserver.disconnect()
+    clearFilters()
+  } else {
+    $("#filterUI")[0].hidden = false
+    if (selectedTag) filterDynamicWithTag()
+  }
+}
 
 
 const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step))
@@ -110,14 +125,21 @@ function fetchTags(requestWithCredentials) {
 
 
 Promise.all([new Promise(res => {
-  setInterval(function () {
-    if ($(".tab-bar").length == 1) res()
-  })
-}).then(function() {$(".tab-bar").after('<div id="filterUI">正在加载分组……</div>');UIPadding()}),fetchTags(ajaxWithCredentials)]).then(data => {
+    setInterval(function () {
+      if ($(".tab-bar").length == 1) res()
+    })
+  }).then(function() {
+    $(".tab-bar").after('<div id="filterUI">正在加载分组……</div>');autoPadding()
+    isBangumiTimeline()
+    tabObserver.observe($(".tab-bar")[0],{childList:true,subtree:true,attributes:true})
+  }),fetchTags(ajaxWithCredentials)]).then(data => {
   $("#filterUI").html('<select id="selectUpTag"></select>')
   tagged = data[1]
   console.log(tagged)
   let tagOptions = tagged.filter(t => t.count != 0)
   tagOptions.unshift({tagid:"shamiko",name:"无筛选"})
   $("#selectUpTag").append(tagOptions.map(t => '<option value="' + t.tagid + '">' + t.name + '</option>').join()).val("shamiko").change(filterDynamicWithTag)
+}).catch(err => {
+  console.error(err)
+  alert("b站时间线筛选脚本出错了！\n请查看控制台以获取错误信息")
 })
