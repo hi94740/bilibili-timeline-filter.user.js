@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.0.0
+// @version 1.0.1
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -17,16 +17,11 @@
 
 var $ = unsafeWindow.jQuery
 
-GM.getResourceUrl("css")
-  .then(u => $("head").append('<link rel="stylesheet" href="' + u + '">'))
-Vue.use(vant.Tab)
-Vue.use(vant.Tabs)
-
 var vm
 var tagged
 var selectedTag
-var cardObserver = new MutationObserver(filterWorker)
-var tabObserver = new MutationObserver(isBangumiTimeline)
+var cardObserver
+var tabObserver
 
 const filterDynamicWithTag = function(selection) {
   cardObserver.disconnect()
@@ -36,9 +31,14 @@ const filterDynamicWithTag = function(selection) {
   } else {
     selectedTag = tagged.find(t => t.tagid == selection)
     console.log(selectedTag)
-    new Promise(res => {setInterval(function() {
-      if ($(".card").length > 0) res()
-    })}).then(function() {
+    new Promise(res => {
+      let siid = setInterval(function () {
+        if ($(".card").length > 0) {
+          clearInterval(siid)
+          res()
+        }
+      })
+    }).then(function() {
       clearFilters()
       filterWorker()
       cardObserver.observe($(".card").parent()[0],{childList:true,subtree:true})
@@ -154,9 +154,18 @@ function fetchTags(requestWithCredentials) {
 
 
 Promise.all([
+  GM.getResourceUrl("css")
+    .then(u => $("head").append('<link rel="stylesheet" href="' + u + '">')),
   new Promise(res => {
-    setInterval(function () {
-      if ($(".tab-bar").length == 1) res()
+    cardObserver = new MutationObserver(filterWorker)
+    tabObserver = new MutationObserver(isBangumiTimeline)
+    Vue.use(vant.Tab)
+    Vue.use(vant.Tabs)
+    let siid = setInterval(function () {
+      if ($(".tab-bar").length == 1) {
+        clearInterval(siid)
+        res()
+      }
     })
   }).then(function() {
     $(".tab-bar").after('<div id="filterUI"><div id="shamiko"></div></div>')
@@ -166,7 +175,7 @@ Promise.all([
   }),
   fetchTags(ajaxWithCredentials)
 ]).then(data => {
-  tagged = data[1]
+  tagged = data[2]
   console.log(tagged)
   let tagOptions = tagged.filter(t => t.count != 0)
   tagOptions.unshift({tagid:"shamiko",name:"全部"})
