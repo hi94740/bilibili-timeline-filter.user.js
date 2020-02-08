@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.0.1
+// @version 1.1.0-1
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -29,7 +29,7 @@ const filterDynamicWithTag = function(selection) {
     clearFilters()
     autoPadding()
   } else {
-    selectedTag = tagged.find(t => t.tagid == selection)
+    selectedTag = tagged[selection]
     console.log(selectedTag)
     new Promise(res => {
       let siid = setInterval(function () {
@@ -116,38 +116,48 @@ function ajaxWithCredentials(url) {
 }
 
 function fetchTags(requestWithCredentials) {
+  let tags = {}
   return requestWithCredentials("https://api.live.bilibili.com/User/getUserInfo")
     .then(data => {
       let uid = data.data.uid
       console.log("uid: " + uid)
-      return Promise.all([
-          requestWithCredentials("https://api.bilibili.com/x/relation/followings?vmid=" + uid + "&pn=1&ps=50")
-            .then(data => {
-              let gf = range(2,Math.ceil(data.data.total/50),1)
-                .map(i => {
-                  return requestWithCredentials("https://api.bilibili.com/x/relation/followings?vmid=" + uid + "&pn=" + i + "&ps=50")
+      let followingsRequests = requestWithCredentials("https://api.bilibili.com/x/relation/followings?vmid=" + uid + "&pn=1&ps=50")
+        .then(data => {
+          let gf = range(2,Math.ceil(data.data.total/50),1)
+            .map(i => {
+              return requestWithCredentials("https://api.bilibili.com/x/relation/followings?vmid=" + uid + "&pn=" + i + "&ps=50")
+            })
+          gf.unshift(Promise.resolve(data))
+          return gf
+        })
+      return requestWithCredentials("https://api.bilibili.com/x/relation/tags?vmid=" + uid)
+        .then(data => {
+          let tagsList = data.data
+          tagsList.map(tag => {
+            tag.list = []
+            return tag
+          }).forEach(tag => tags[tag.tagid] = tag)
+          return {
+            tags:tagsList,
+            tagged:followingsRequests.then(gf => {
+              return Promise.all(gf.map(request => {
+                return request.then(data => {
+                  let followings = data.data.list
+                  followings.forEach(f => {
+                    if (f.tag) {
+                      f.tag.forEach(t => {
+                        if (tags[t]) tags[t].list.push(f)
+                        else console.log("迷之tag：" + t)
+                      })
+                    } else {
+                      tags[0].list.push(f)
+                    }
+                  })
                 })
-              gf.unshift(data)
-              return Promise.all(gf)
-            }),
-        requestWithCredentials("https://api.bilibili.com/x/relation/tags?vmid=" + uid)
-      ])
-    }).then(data => {
-      let followings = data[0].map(p => p.data.list).flat()
-      let tags = data[1].data
-      return tags.map(tag => {
-        if (tag.tagid == 0) {
-          tag.list = followings.filter(f => {
-            return f.tag == null
-          })
-        } else {
-          tag.list = followings.filter(f => {
-            if (f.tag) return f.tag.includes(tag.tagid)
-            return false
-          })
-        }
-        return tag
-      })
+              })).then(() => tags)
+            })
+          }
+        })
     })
 }
 
@@ -175,10 +185,9 @@ Promise.all([
   }),
   fetchTags(ajaxWithCredentials)
 ]).then(data => {
-  tagged = data[2]
-  console.log(tagged)
-  let tagOptions = tagged.filter(t => t.count != 0)
+  let tagOptions = data[2].tags.filter(t => t.count != 0)
   tagOptions.unshift({tagid:"shamiko",name:"全部"})
+  let loadCompleted = false
   vm = new Vue({
     el:"#shamiko",
     template: '<van-tabs v-model="activeName" line-height="2px" color="#00a1d6" title-inactive-color="#99a2aa" swipe-threshold="10" @click="onClick"><van-tab v-for="tag in tags" :title="tag.name" :name="tag.tagid"></van-tab></van-tabs>',
@@ -186,10 +195,20 @@ Promise.all([
       activeName:"shamiko",
       tags:tagOptions
     },
-    methods:{onClick:s => {setTimeout(filterDynamicWithTag,300,s)}}
+    methods:{onClick:s => {
+      if (loadCompleted) setTimeout(filterDynamicWithTag,300,s)
+      else {
+        setTimeout(() => {vm.activeName = "shamiko"},100)
+        vant.Toast.fail("分组名单尚未加载完成，请稍后再试！")
+      }
+    }}
   })
   $(".van-tabs").children()[0].style["border-radius"] = "4px"
   isBangumiTimeline()
+  data[2].tagged.then(data => {
+    tagged = data
+    loadCompleted = true
+  })
 }).catch(err => {
   console.error(err)
   alert("【b站时间线筛选】脚本出错了！\n请查看控制台以获取错误信息")
