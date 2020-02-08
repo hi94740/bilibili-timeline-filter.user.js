@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.1.0-1
+// @version 1.1.0-2
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -164,6 +164,7 @@ function fetchTags(requestWithCredentials) {
 
 
 Promise.all([
+  fetchTags(ajaxWithCredentials),
   GM.getResourceUrl("css")
     .then(u => $("head").append('<link rel="stylesheet" href="' + u + '">')),
   new Promise(res => {
@@ -182,10 +183,9 @@ Promise.all([
     $("#filterUI")[0].hidden = true
     autoPadding()
     tabObserver.observe($(".tab-bar")[0],{childList:true,subtree:true,attributes:true})
-  }),
-  fetchTags(ajaxWithCredentials)
+  })
 ]).then(data => {
-  let tagOptions = data[2].tags.filter(t => t.count != 0)
+  let tagOptions = data[0].tags.filter(t => t.count != 0)
   tagOptions.unshift({tagid:"shamiko",name:"全部"})
   let loadCompleted = false
   vm = new Vue({
@@ -205,7 +205,7 @@ Promise.all([
   })
   $(".van-tabs").children()[0].style["border-radius"] = "4px"
   isBangumiTimeline()
-  data[2].tagged.then(data => {
+  data[0].tagged.then(data => {
     tagged = data
     loadCompleted = true
   })
