@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.1.2
+// @version 1.1.3
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -14,6 +14,8 @@
 // @require https://cdn.jsdelivr.net/npm/vant@2.4/lib/vant.min.js
 // @resource css https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css
 // ==/UserScript==
+
+if (document.URL == "https://t.bilibili.com/" || document.URL.startsWith("https://t.bilibili.com/?")) {
 
 var $ = unsafeWindow.jQuery
 
@@ -217,3 +219,5 @@ Promise.all([
   console.error(err)
   alert("【b站时间线筛选】脚本出错了！\n请查看控制台以获取错误信息")
 })
+
+}
