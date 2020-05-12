@@ -146,8 +146,12 @@ function fetchTags(requestWithCredentials) {
                   followings.forEach(f => {
                     if (f.tag) {
                       f.tag.forEach(t => {
-                        if (tags[t]) tags[t].list.push(f)
-                        else console.log("迷之tag：" + t)
+                        let tagCount = 0
+                        if (tags[t]) {
+                          tags[t].list.push(f)
+                          tagCount++
+                        } else console.log("迷之tag：" + t)
+                        if (tagCount == 0) tags[0].list.push(f)
                       })
                     } else {
                       tags[0].list.push(f)
