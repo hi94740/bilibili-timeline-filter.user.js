@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.1.1
+// @version 1.1.2
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
