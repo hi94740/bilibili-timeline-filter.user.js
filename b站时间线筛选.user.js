@@ -2,7 +2,7 @@
 // @name b站时间线筛选
 // @namespace hi94740
 // @author hi94740
-// @version 1.1.3
+// @version 1.1.4
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -147,14 +147,14 @@ function fetchTags(requestWithCredentials) {
                   let followings = data.data.list
                   followings.forEach(f => {
                     if (f.tag) {
+                      let noAliveTag = true
                       f.tag.forEach(t => {
-                        let tagCount = 0
                         if (tags[t]) {
                           tags[t].list.push(f)
-                          tagCount++
+                          noAliveTag = false
                         } else console.log("迷之tag：" + t)
-                        if (tagCount == 0) tags[0].list.push(f)
                       })
+                      if (noAliveTag) tags[0].list.push(f)
                     } else {
                       tags[0].list.push(f)
                     }
