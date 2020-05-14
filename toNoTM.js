@@ -31,11 +31,11 @@ function getRemoteResources(script) {
         toString(request.get(url).pipe(encoder)).then(b => resource.base64 = b)
       ]).then(() => resources[key] = resource)
     })).then(() => {
-      return "var GM = {}\n\
-!function(GM){\n\
-let resources = " + JSON.stringify(resources) + "\n\
-GM.getResourceUrl = key => Promise.resolve('data:' + resources[key].type +';base64,' + resources[key].base64)\n\
-}(GM)\n\n\n\n" + sip
+      return "var GM = !function(){\n\
+  var GM\n\
+  let resources = " + JSON.stringify(resources) + "\n\
+  return GM.getResourceUrl = key => Promise.resolve('data:' + resources[key].type +';base64,' + resources[key].base64)\n\
+}()\n\n\n\n" + sip
     })
   })
 }
