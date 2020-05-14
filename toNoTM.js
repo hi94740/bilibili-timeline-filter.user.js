@@ -32,11 +32,11 @@ function getRemoteResources(script) {
       ]).then(() => resources[key] = resource)
     })).then(() => {
       return "var GM = {}\n\
-(function(GM){\n\
+!function(GM){\n\
   let resources = " + JSON.stringify(resources) + "\n\
   GM.getResourceUrl = key => Promise.resolve('data:' + resources[key].type +';base64,' + resources[key].base64)\n\
   return GM\n\
-})(GM)\n\n\n\n" + sip
+}(GM)\n\n\n\n" + sip
     })
   })
 }
