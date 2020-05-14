@@ -8,11 +8,10 @@
 
 安装方法：[如何安装用户脚本 - Greasy Fork](https://greasyfork.org/zh-CN/help/installing-user-scripts)
 
-
 安装完成后，打开b站动态页面，在动态分类标签栏和动态列表之间会有一个新的**标签栏**，可以选择要筛选的分组。
 
+GitHub: [hi94740](https://github.com/hi94740)/**[bilibili-timeline-filter.user.js](https://github.com/hi94740/bilibili-timeline-filter.user.js)**
 
-
-Github: [hi94740](https://github.com/hi94740)/**[bilibili-timeline-filter.user.js](https://github.com/hi94740/bilibili-timeline-filter.user.js)**
+[版本历史](https://github.com/hi94740/bilibili-timeline-filter.user.js/releases)（点击 [···] 查看更新日志）
 
 
