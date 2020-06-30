@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name b站时间线筛选
+// @name bilibili时间线筛选——分组查看b站动态
 // @namespace hi94740
 // @author hi94740
 // @version 2.0.0-1
