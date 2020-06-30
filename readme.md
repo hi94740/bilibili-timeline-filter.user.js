@@ -10,7 +10,7 @@
 
 ## 使用方法
 
-下载：[b站时间线筛选 - Greasy Fork](https://greasyfork.org/zh-CN/scripts/396032-b%E7%AB%99%E6%97%B6%E9%97%B4%E7%BA%BF%E7%AD%9B%E9%80%89)
+下载：[bilibili时间线筛选——分组查看b站动态 - Greasy Fork](https://greasyfork.org/zh-CN/scripts/396032-bilibili时间线筛选-分组查看b站动态)
 
 安装方法：[如何安装用户脚本 - Greasy Fork](https://greasyfork.org/zh-CN/help/installing-user-scripts)
 
