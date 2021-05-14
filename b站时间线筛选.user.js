@@ -61,7 +61,7 @@ const filterDynamicWithTags = function(selections,excluded) {
       }).then(function() {
         clearFilters()
         filterWorker()
-        cardObserver.observe($(".card").parent()[0],{childList:true,subtree:true})
+        cardObserver.observe($(".card").parent().parent()[0],{childList:true,subtree:true})
       })
     }
   }
