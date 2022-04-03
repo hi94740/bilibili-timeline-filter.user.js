@@ -2,7 +2,7 @@
 // @name bilibili时间线筛选——分组查看b站动态
 // @namespace hi94740
 // @author hi94740
-// @version 2.0.1
+// @version 2.0.2
 // @license MIT
 // @description 这个脚本能帮你通过关注分组筛选b站时间线上的动态
 // @include https://t.bilibili.com/*
@@ -10,6 +10,7 @@
 // @noframes
 // @grant unsafeWindow
 // @grant GM.getResourceUrl
+// @require https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js
 // @require https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js
 // @require https://cdn.jsdelivr.net/npm/vant@2.8/lib/vant.min.js
@@ -17,8 +18,6 @@
 // ==/UserScript==
 
 if (document.URL == "https://t.bilibili.com/" || document.URL.startsWith("https://t.bilibili.com/?")) {
-
-var $ = unsafeWindow.jQuery
 
 var vmTab
 var vmBWList
