@@ -12,7 +12,7 @@
 // @grant GM.getResourceUrl
 // @require https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
 // @require https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js
-// @require https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js
+// @require https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js
 // @require https://cdn.jsdelivr.net/npm/vant@2.8/lib/vant.min.js
 // @resource css https://cdn.jsdelivr.net/npm/vant@2.8/lib/index.css
 // ==/UserScript==
