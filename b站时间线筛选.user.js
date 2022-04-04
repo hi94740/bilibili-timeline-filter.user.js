@@ -52,7 +52,7 @@ const filterDynamicWithTags = function(selections,excluded) {
       console.log(selections)
       new Promise(res => {
         let siid = setInterval(function () {
-          if ($(".card").length > 0) {
+          if ($(".bili-dyn-item").length > 0) {
             clearInterval(siid)
             res()
           }
@@ -60,21 +60,16 @@ const filterDynamicWithTags = function(selections,excluded) {
       }).then(function() {
         clearFilters()
         filterWorker()
-        cardObserver.observe($(".card").parent().parent()[0],{childList:true,subtree:true})
+        cardObserver.observe($(".bili-dyn-item").parent().parent()[0],{childList:true,subtree:true})
       })
     }
   }
 }
 
 function filterWorker() {
-  $(".card").toArray().forEach(c => {
-    let href = $(c).children()[0].href
-    if (href) {
-      if (href.startsWith("https://space.bilibili.com/")) {
-        if (!(selectedUp.some(up => up.mid == href.replace("https://space.bilibili.com/","").replace("/dynamic","")))) $(c)[0].hidden = true
-      }
-      if (href.startsWith("https://bangumi.bilibili.com/")) $(c)[0].hidden = true
-    }
+  $(".bili-dyn-item").toArray().forEach(c => {
+    let author = c.__vue__.author
+    if (!(selectedUp.some(up => up.mid == author.mid || author.label == "番剧"))) $(c)[0].hidden = true
   })
   loadMoreDynamics()
   autoPadding()
@@ -101,11 +96,11 @@ function forceLoad() {
 }
 
 function clearFilters() {
-  $(".card").toArray().forEach(c => c.hidden = false)
+  $(".bili-dyn-item").toArray().forEach(c => c.hidden = false)
 }
 
 function autoPadding() {
-  $("#btf-tab-area").css("padding",($(".card")[0] && $(".new-notice-bar").length == 0) ? ($(".card")[0].hidden ? "0px 0px 0px 0px" : "0px 0px 8px 0px") : "0px 0px 8px 0px")
+  $("#btf-tab-area").css("padding",($(".bili-dyn-item")[0] && $(".new-notice-bar").length == 0) ? ($(".bili-dyn-item")[0].hidden ? "0px 0px 0px 0px" : "0px 0px 8px 0px") : "0px 0px 8px 0px")
 }
 
 function isBangumiTimeline() {
@@ -207,18 +202,18 @@ Promise.all([
     Vue.use(vant.Tab)
     Vue.use(vant.Tabs)
     let siid = setInterval(function () {
-      if ($(".tab-bar").length == 1 && $(".user-wrapper").length == 1) {
+      if ($(".bili-dyn-list-tabs").length == 1 && $(".bili-dyn-live-users").length == 1) {
         clearInterval(siid)
         res()
       }
     })
   }).then(function() {
-    $(".tab-bar").after('<div id="btf-tab-area"><div id="btf-tab"></div></div>')
-    $(".user-wrapper").after('<div id="btf-bwlist-area" style="padding-top:8px"><div id="btf-bwlist"></div></div>')
+    $(".bili-dyn-list-tabs").after('<div id="btf-tab-area"><div id="btf-tab"></div></div>')
+    $(".bili-dyn-live-users").after('<div id="btf-bwlist-area" style="padding-top:8px"><div id="btf-bwlist"></div></div>')
     $("#btf-tab-area")[0].hidden = true
     $("#btf-bwlist-area")[0].hidden = true
     autoPadding()
-    tabObserver.observe($(".tab-bar")[0],{childList:true,subtree:true,attributes:true})
+    tabObserver.observe($(".bili-dyn-list-tabs")[0],{childList:true,subtree:true,attributes:true})
   })
 ]).then(data => {
   let tagOptions = data[0].tags.filter(t => t.count != 0)
